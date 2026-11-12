@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>3D-експедиція: Повний квест за Розділом 2</title>
+    <title>Квест: § 7. Тривимірний редактор Blender</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,7 +12,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             background-color: #1c2541;
             padding: 30px;
@@ -22,109 +22,266 @@
         h1 {
             color: #4cc9f0;
             text-align: center;
+            font-size: 24px;
         }
         .subtitle {
             text-align: center;
             color: #8d99ae;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
-        .mission-box {
+        .legend-box {
             background-color: #3a506b;
             padding: 20px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-        .question {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .option {
-            background-color: #1c2541;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 6px;
-            cursor: pointer;
+        .legend-box input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border-radius: 5px;
             border: 1px solid #4cc9f0;
-            transition: 0.3s;
+            background-color: #0b132b;
+            color: #fff;
+            font-size: 16px;
         }
-        .option:hover {
+        .btn {
             background-color: #4cc9f0;
             color: #0b132b;
-        }
-        .result {
-            margin-top: 10px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            transition: 0.3s;
         }
-        .score-panel {
-            text-align: center;
-            font-size: 20px;
+        .btn:hover {
             background-color: #4361ee;
-            padding: 15px;
+            color: #fff;
+        }
+        .quest-section {
+            display: none;
+        }
+        .question-card {
+            background-color: #3a506b;
+            padding: 15px 20px;
             border-radius: 8px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        label {
+            display: block;
+            background-color: #1c2541;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: 0.2s;
+        }
+        label:hover {
+            border-color: #4cc9f0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        .result-box {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            background-color: #3a506b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>3D-експедиція: Таємниці цифрової лабораторії</h1>
-        <div class="subtitle">Інтерактивний квест за Розділом 2 «Тривимірна графіка» (стор. 34–71)</div>
-        
-        <div class="score-panel">
-            Загальний рахунок: <span id="score">0</span> балів
+        <h1>Інтерактивний квест: § 7. Тривимірний редактор Blender</h1>
+        <div class="subtitle">Розділ 2. Тривимірна графіка (стор. 41–47)</div>
+
+        <!-- Крок 1: Легенда та введення даних учня -->
+        <div class="legend-box" id="legendSection">
+            <h3>Легенда місії:</h3>
+            <p>Вітаю у віртуальній лабораторії 3D-моделювання! Щоб розпочати експедицію та відновити налаштування редактора Blender, будь ласка, представтеся:</p>
+            
+            <label for="studentName"><b>Прізвище та ім'я учня / учениці:</b></label>
+            <input type="text" id="studentName" placeholder="Введіть своє прізвище та ім'я">
+
+            <label for="studentClass"><b>Клас:</b></label>
+            <input type="text" id="studentClass" placeholder="Наприклад: 9-А">
+
+            <button class="btn" onclick="startQuest()">Розпочати квест</button>
         </div>
 
-        <!-- Місія 1 -->
-        <div class="mission-box" id="m1">
-            <div class="question">Місія 1: Що називають рендерингом у 3D-графіці?</div>
-            <div class="option" onclick="checkAnswer(1, true)">Створення плоского растрового зображення на основі 3D-моделі</div>
-            <div class="option" onclick="checkAnswer(1, false)">Друк об'єкта на 3D-принтері</div>
-            <div class="option" onclick="checkAnswer(1, false)">Збереження файлу у форматі проєкту</div>
-            <div class="result" id="res1"></div>
+        <!-- Крок 2: Сам квест (12 запитань) -->
+        <div class="quest-section" id="questSection">
+            <p id="greetingInfo" style="color: #4cc9f0; font-weight: bold;"></p>
+
+            <form id="quizForm">
+                
+                <!-- Запитання 1 -->
+                <div class="question-card">
+                    <div class="question-title">1. Що таке Blender?</div>
+                    <label><input type="radio" name="q1" value="0"> Текстовий редактор для створення документів</label>
+                    <label><input type="radio" name="q1" value="1"> Програма тривимірного моделювання з відкритим кодом</label>
+                    <label><input type="radio" name="q1" value="0"> Браузер для перегляду вебсторінок</label>
+                    <label><input type="radio" name="q1" value="0"> Програма для створення растрових малюнків</label>
+                </div>
+
+                <!-- Запитання 2 -->
+                <div class="question-card">
+                    <div class="question-title">2. Який об'єкт за замовчуванням з'являється на сцені у новому проєкті Blender?</div>
+                    <label><input type="radio" name="q2" value="0"> Сфера</label>
+                    <label><input type="radio" name="q2" value="0"> Циліндр</label>
+                    <label><input type="radio" name="q2" value="1"> Куб</label>
+                    <label><input type="radio" name="q2" value="0"> Площина</label>
+                </div>
+
+                <!-- Запитання 3 -->
+                <div class="question-card">
+                    <div class="question-title">3. За допомогою якої кнопки миші зазвичай обертають сцену (огляд у 3D-просторі)?</div>
+                    <label><input type="radio" name="q3" value="1"> Середня кнопка миші (коліщатко)</label>
+                    <label><input type="radio" name="q3" value="0"> Ліва кнопка миші</label>
+                    <label><input type="radio" name="q3" value="0"> Права кнопка миші</label>
+                    <label><input type="radio" name="q3" value="0"> Подвійне клацання</label>
+                </div>
+
+                <!-- Запитання 4 -->
+                <div class="question-card">
+                    <div class="question-title">4. Яка клавіша на клавіатурі використовується для переміщення (Grab/Move) виділеного об'єкта?</div>
+                    <label><input type="radio" name="q4" value="0"> S</label>
+                    <label><input type="radio" name="q4" value="0"> R</label>
+                    <label><input type="radio" name="q4" value="1"> G</label>
+                    <label><input type="radio" name="q4" value="0"> Tab</label>
+                </div>
+
+                <!-- Запитання 5 -->
+                <div class="question-card">
+                    <div class="question-title">5. Яка клавіша використовується для масштабування (Scale) об'єкта?</div>
+                    <label><input type="radio" name="q5" value="1"> S</label>
+                    <label><input type="radio" name="q5" value="0"> M</label>
+                    <label><input type="radio" name="q5" value="0"> R</label>
+                    <label><input type="radio" name="q5" value="0"> E</label>
+                </div>
+
+                <!-- Запитання 6 -->
+                <div class="question-card">
+                    <div class="question-title">6. Яка клавіша використовується для обертання (Rotate) об'єкта?</div>
+                    <label><input type="radio" name="q6" value="0"> O</label>
+                    <label><input type="radio" name="q6" value="1"> R</label>
+                    <label><input type="radio" name="q6" value="0"> T</label>
+                    <label><input type="radio" name="q6" value="0"> P</label>
+                </div>
+
+                <!-- Запитання 7 -->
+                <div class="question-card">
+                    <div class="question-title">7. Які два основні режими роботи найчастіше використовуються при моделюванні?</div>
+                    <label><input type="radio" name="q7" value="0"> Графічний і текстовий режими</label>
+                    <label><input type="radio" name="q7" value="0"> Ручний і автоматичний режими</label>
+                    <label><input type="radio" name="q7" value="1"> Об'єктний режим (Object Mode) та режим редагування (Edit Mode)</label>
+                    <label><input type="radio" name="q7" value="0"> 2D-режим і 3D-режим</label>
+                </div>
+
+                <!-- Запитання 8 -->
+                <div class="question-card">
+                    <div class="question-title">8. Що таке «меш» (Mesh) у Blender?</div>
+                    <label><input type="radio" name="q8" value="1"> Сукупність вершин, ребер і граней, що утворюють 3D-об'єкт</label>
+                    <label><input type="radio" name="q8" value="0"> Колірна палітра проєкту</label>
+                    <label><input type="radio" name="q8" value="0"> Швидкість рендерингу</label>
+                    <label><input type="radio" name="q8" value="0"> Файл збереження налаштувань</label>
+                </div>
+
+                <!-- Запитання 9 -->
+                <div class="question-card">
+                    <div class="question-title">9. Яка комбінація клавіш викликає меню додавання нового примітива (наприклад, сфери чи циліндра)?</div>
+                    <label><input type="radio" name="q9" value="0"> Ctrl + C</label>
+                    <label><input type="radio" name="q9" value="1"> Shift + A</label>
+                    <label><input type="radio" name="q9" value="0"> Alt + N</label>
+                    <label><input type="radio" name="q9" value="0"> Tab + S</label>
+                </div>
+
+                <!-- Запитання 10 -->
+                <div class="question-card">
+                    <div class="question-title">10. За допомогою якої клавіші можна видалити виділений об'єкт на сцені?</div>
+                    <label><input type="radio" name="q10" value="1"> Delete або X</label>
+                    <label><input type="radio" name="q10" value="0"> Backspace</label>
+                    <label><input type="radio" name="q10" value="0"> Esc</label>
+                    <label><input type="radio" name="q10" value="0"> Space</label>
+                </div>
+
+                <!-- Запитання 11 -->
+                <div class="question-card">
+                    <div class="question-title">11. Що робить клавіша Tab у середовищі Blender?</div>
+                    <label><input type="radio" name="q11" value="0"> Зберігає проєкт</label>
+                    <label><input type="radio" name="q11" value="0"> Скасовує останню дію</label>
+                    <label><input type="radio" name="q11" value="1"> Перемикає між об'єктним режимом і режимом редагування</label>
+                    <label><input type="radio" name="q11" value="0"> Запускає рендеринг</label>
+                </div>
+
+                <!-- Запитання 12 -->
+                <div class="question-card">
+                    <div class="question-title">12. Для чого призначена «камера» на сцені Blender?</div>
+                    <label><input type="radio" name="q12" value="1"> Для визначення точки зору, з якої створюватиметься кінцеве зображення</label>
+                    <label><input type="radio" name="q12" value="0"> Для освітлення об'єктів</label>
+                    <label><input type="radio" name="q12" value="0"> Для вимірювання розміру моделі в сантиметрах</label>
+                    <label><input type="radio" name="q12" value="0"> Для керування рухом миші</label>
+                </div>
+
+                <button type="button" class="btn" onclick="submitQuiz()">Завершити квест і отримати результат</button>
+            </form>
         </div>
 
-        <!-- Місія 2 -->
-        <div class="mission-box" id="m2">
-            <div class="question">Місія 2: Який об'єкт є базовим (примітивом) у середовищі моделювання?</div>
-            <div class="option" onclick="checkAnswer(2, false)">Складна анімація персонажа</div>
-            <div class="option" onclick="checkAnswer(2, true)">Куб, циферблат або сфера</div>
-            <div class="option" onclick="checkAnswer(2, false)">Готовий текстурний шар</div>
-            <div class="result" id="res2"></div>
-        </div>
-
-        <!-- Місія 3 -->
-        <div class="mission-box" id="m3">
-            <div class="question">Місія 3: Для чого призначені ося координат (X, Y, Z) у 3D-просторі?</div>
-            <div class="option" onclick="checkAnswer(3, true)">Для визначення положення, переміщення та масштабування об'єктів</div>
-            <div class="option" onclick="checkAnswer(3, false)">Виключно для зміни кольору заливки</div>
-            <div class="option" onclick="checkAnswer(3, false)">Для вимірювання часу рендерингу</div>
-            <div class="result" id="res3"></div>
-        </div>
+        <!-- Результат -->
+        <div class="result-box" id="resultBox"></div>
 
     </div>
 
     <script>
-        let totalScore = 0;
-        let answered = { 1: false, 2: false, 3: false };
+        function startQuest() {
+            const name = document.getElementById("studentName").value.trim();
+            const cls = document.getElementById("studentClass").value.trim();
 
-        function checkAnswer(missionNum, isCorrect) {
-            if (answered[missionNum]) return; // Захист від повторного кліку
-            
-            const resDiv = document.getElementById("res" + missionNum);
-            answered[missionNum] = true;
-
-            if (isCorrect) {
-                resDiv.style.color = "#4ade80";
-                resDiv.innerHTML = "Правильно! +25 балів.";
-                totalScore += 25;
-            } else {
-                resDiv.style.color = "#f87171";
-                resDiv.innerHTML = "Помилка! Правильна відповідь інша.";
+            if (name === "" || cls === "") {
+                alert("Будь ласка, введіть своє Прізвище, ім'я та клас!");
+                return;
             }
-            
-            document.getElementById("score").innerText = totalScore;
+
+            document.getElementById("legendSection").style.display = "none";
+            document.getElementById("questSection").style.display = "block";
+            document.getElementById("greetingInfo").innerText = `Учень/Учениця: ${name} | Клас: ${cls}`;
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            let totalQuestions = 12;
+
+            for (let i = 1; i <= totalQuestions; i++) {
+                let options = document.getElementsByName("q" + i);
+                for (let opt of options) {
+                    if (opt.checked && opt.value === "1") {
+                        score++;
+                    }
+                }
+            }
+
+            const name = document.getElementById("studentName").value;
+            const cls = document.getElementById("studentClass").value;
+
+            document.getElementById("questSection").style.display = "none";
+            const resBox = document.getElementById("resultBox");
+            resBox.style.display = "block";
+            resBox.innerHTML = `Вітаю, ${name} (${cls})!<br>Ваш результат: <b>${score} з ${totalQuestions}</b> балів.`;
         }
     </script>
 
